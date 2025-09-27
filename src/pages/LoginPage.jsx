@@ -1,29 +1,32 @@
 import React, { useState } from 'react';
-import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
+import { auth } from '../firebaseConfig';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState(''); // you were missing this
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const auth = getAuth();
 
+  // Email/password login
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate('/wardrobe'); // you can change this later
+      navigate('/wardrobe'); // redirect after login
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
+  // Google login
   const handleGoogleLogin = async () => {
     setLoading(true);
     setError('');
@@ -33,19 +36,22 @@ export default function LoginPage() {
       navigate('/wardrobe');
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
         <h1 className="text-2xl font-bold mb-6 text-center">Digital Wardrobe Login</h1>
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+
         <form onSubmit={handleLogin} className="flex flex-col">
           <input
             type="email"
-            placeholder="Enter your email"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="p-2 mb-4 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -53,7 +59,7 @@ export default function LoginPage() {
           />
           <input
             type="password"
-            placeholder="Enter your password"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="p-2 mb-4 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -61,37 +67,35 @@ export default function LoginPage() {
           />
           <button
             type="submit"
-            className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors"
             disabled={loading}
+            className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors"
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 
-        <div className="mt-4 text-center">
-          <button
-            onClick={handleGoogleLogin}
-            className="w-full bg-red-500 text-white py-2 rounded mt-2 hover:bg-red-600 transition-colors flex items-center justify-center"
-            disabled={loading}
-          >
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo" className="w-5 h-5 mr-2" />
-            {loading ? 'Logging in...' : 'Login with Google'}
-          </button>
-        </div>
+        <button
+          onClick={handleGoogleLogin}
+          disabled={loading}
+          className="mt-4 w-full bg-red-500 text-white py-2 rounded hover:bg-red-600 transition-colors flex items-center justify-center"
+        >
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+            alt="Google Logo"
+            className="w-5 h-5 mr-2"
+          />
+          {loading ? 'Logging in...' : 'Login with Google'}
+        </button>
 
-        <div className="mt-4 text-center text-sm">
-          <p>
-            Don't have an account?{' '}
-            <span className="text-blue-600 cursor-pointer" onClick={() => navigate('/signup')}>
-              Sign Up
-            </span>
-          </p>
-          <p className="mt-1">
-            <span className="text-blue-600 cursor-pointer" onClick={() => navigate('/forgot-password')}>
-              Forgot Password?
-            </span>
-          </p>
-        </div>
+        <p className="mt-4 text-sm text-center">
+          Don't have an account?{' '}
+          <span
+            className="text-blue-600 cursor-pointer"
+            onClick={() => navigate('/signup')}
+          >
+            Sign Up
+          </span>
+        </p>
       </div>
     </div>
   );

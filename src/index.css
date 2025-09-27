@@ -3,6 +3,12 @@
 @tailwind utilities;
 
 /* Optional: custom CSS */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
+
 body {
-  font-family: 'Inter', sans-serif;
+  background-color: #f9fafb; /* light gray, optional */
 }

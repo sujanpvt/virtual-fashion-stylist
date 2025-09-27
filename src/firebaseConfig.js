@@ -13,8 +13,13 @@ const firebaseConfig = {
   appId: "YOUR_APP_ID"
 };
 
+// initialize once
 const app = initializeApp(firebaseConfig);
 
+// export initialized services
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+
+// optional: default export app
+export default app;
